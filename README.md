@@ -1,6 +1,7 @@
 # ChatGPT Desktop
 
-ChatGPT Desktop 是一个桌面应用程序，可以方便地访问 ChatGPT 语言模型。它使用 Electron 构建，提供了一个用户友好的界面，用于与 ChatGPT 模型进行交互。
+ChatGPT Desktop 是一个桌面应用程序，用于以桌面程序的方式访问 ChatGPT 网页。它是对 ChatGPT 网页的一个包装。使用 Electron 构建，提供了一个用户友好的界面。
+For english is [here](./README_eng.md)
 
 ## 功能特点
 

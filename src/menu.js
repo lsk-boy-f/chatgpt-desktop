@@ -50,7 +50,7 @@ class MenuBuilder {
           label: 'Configuration',
           accelerator: 'Command+,',
           click: () => {
-            console.log('config window: ', this.windowManager.configWindow);
+            // console.log('config window: ', this.windowManager.configWindow);
             if (!this.windowManager.configWindow) {
               this.windowManager.createConfigWindow();
             } else {

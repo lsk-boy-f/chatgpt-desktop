@@ -1,6 +1,6 @@
 # ChatGPT Desktop
 
-ChatGPT Desktop is a desktop application that allows you to access the ChatGPT language model in a convenient way. It is built using Electron and provides a user-friendly interface for interacting with the ChatGPT model.
+ChatGPT Desktop is a desktop application that serves as a wrapper for the ChatGPT web page. It allows convenient access to ChatGPT in the form of a desktop program. It is built using Electron and provides a user-friendly interface. 中文版本在[这里](./README.md).
 
 ## Features
 

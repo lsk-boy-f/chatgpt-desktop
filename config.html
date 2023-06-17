@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>配置</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    p {
+      margin-bottom: 10px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"] {
+      padding: 5px;
+      width: 300px;
+      margin-bottom: 10px;
+    }
+
+    button[type="submit"] {
+      padding: 8px 16px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>配置</h1>
+  <form id="configForm">
+    <p>当前配置文件路径：<span id="configFilePath"></span></p>
+
+    <label for="proxyAddress">代理地址：</label>
+    <input type="text" id="proxyAddress" name="proxyAddress" placeholder="请输入代理地址">
+
+    <label for="proxyPort">代理端口：</label>
+    <input type="text" id="proxyPort" name="proxyPort" placeholder="请输入代理端口">
+
+    <button type="submit">保存</button>
+  </form>
+
+
+  <script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const { ipcRenderer } = require('electron');
+      // 从主进程读取配置信息
+      ipcRenderer.send('read-config');
+      ipcRenderer.on('read-config-reply', (event, { error, config }) => {
+        if (error) {
+          console.error('读取配置信息失败:', error);
+        } else {
+          document.getElementById('proxyAddress').value = config.proxyAddress;
+          document.getElementById('proxyPort').value = config.proxyPort;
+          const configFilePathElement = document.getElementById('configFilePath');
+          configFilePathElement.textContent = config.configFilePath;
+        }
+      });
+
+      // 向主进程写入配置信息
+      document.getElementById('configForm').addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const proxyAddress = document.getElementById('proxyAddress').value.trim();
+        const proxyPort = document.getElementById('proxyPort').value.trim();
+
+        const configData = {
+          proxyAddress,
+          proxyPort
+        };
+
+        ipcRenderer.send('write-config', configData);
+        ipcRenderer.on('write-config-reply', (event, { error, success }) => {
+          if (error) {
+            console.error('写入配置信息失败:', error);
+          } else if (success) {
+            console.log('配置信息已保存');
+          }
+        });
+      });
+
+      const configForm = document.getElementById('configForm');
+      const proxyAddressInput = document.getElementById('proxyAddress');
+      const proxyPortInput = document.getElementById('proxyPort');
+
+      // 保存配置到配置文件
+      configForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const proxyAddress = proxyAddressInput.value.trim();
+        const proxyPort = proxyPortInput.value.trim();
+
+        const configData = {
+          proxyAddress,
+          proxyPort
+        };
+
+        fs.writeFile(configFilePath, JSON.stringify(configData), 'utf-8', function (error) {
+          if (error) {
+            console.error('保存配置文件失败:', error);
+          } else {
+            console.log('配置已保存');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>

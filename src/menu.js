@@ -1,39 +1,43 @@
-const { app, Menu, shell }  = require('electron');
-const { createConfigWindow } = require('./app')
+const { app, Menu, shell, BrowserWindow } = require('electron');
 
+class MenuBuilder {
 
-function buildMenu(mainWindow) {
+  constructor(windowManager) {
+    this.windowManager = windowManager;
+  }
+
+  buildMenu() {
     if (
       process.env.NODE_ENV === 'development' ||
       process.env.DEBUG_PROD === 'true'
     ) {
-      setupDevelopmentEnvironment(mainWindow);
+      this.setupDevelopmentEnvironment();
     }
     const template =
       process.platform === 'darwin'
-        ? buildDarwinTemplate(mainWindow)
-        : buildDefaultTemplate(mainWindow);
+        ? this.buildDarwinTemplate()
+        : this.buildDefaultTemplate();
     const menu = Menu.buildFromTemplate(template);
     Menu.setApplicationMenu(menu);
     return menu;
   }
 
-function  setupDevelopmentEnvironment(mainWindow) {
+  setupDevelopmentEnvironment() {
     mainWindow.webContents.on('context-menu', (_, props) => {
       const { x, y } = props;
       Menu.buildFromTemplate([
         {
           label: 'Inspect element',
           click: () => {
-            mainWindow.webContents.inspectElement(x, y);
+            let window = BrowserWindow.getFocusedWindow()
+            window && window.webContents.inspectElement(x, y);
           },
         },
       ]).popup({ window: mainWindow });
     });
   }
 
-function  buildDarwinTemplate(mainWindow) {
-  let configWindow
+  buildDarwinTemplate() {
     const subMenuAbout = {
       label: 'Electron',
       submenu: [
@@ -45,13 +49,14 @@ function  buildDarwinTemplate(mainWindow) {
         {
           label: 'Configuration',
           click: () => {
-              if (!configWindow) {
-                  window = createConfigWindow();
-              } else {
-                  configWindow.focus();
-              }
+            console.log('config window: ', this.windowManager.configWindow);
+            if (!this.windowManager.configWindow) {
+              this.windowManager.createConfigWindow();
+            } else {
+              this.windowManager.configWindow.focus();
+            }
           }
-      },
+        },
         { type: 'separator' },
         { label: 'Services', submenu: [] },
         { type: 'separator' },
@@ -101,21 +106,24 @@ function  buildDarwinTemplate(mainWindow) {
           label: 'Reload',
           accelerator: 'Command+R',
           click: () => {
-            mainWindow.webContents.reload();
+            let window = BrowserWindow.getFocusedWindow()
+            window && window.webContents.reload();
           },
         },
         {
           label: 'Toggle Full Screen',
           accelerator: 'Ctrl+Command+F',
           click: () => {
-            mainWindow.setFullScreen(!mainWindow.isFullScreen());
+            let window = BrowserWindow.getFocusedWindow()
+            window && window.setFullScreen(!window.isFullScreen());
           },
         },
         {
           label: 'Toggle Developer Tools',
           accelerator: 'Alt+Command+I',
           click: () => {
-            mainWindow.webContents.toggleDevTools();
+            let window = BrowserWindow.getFocusedWindow()
+            window && window.webContents.toggleDevTools();
           },
         },
       ],
@@ -127,7 +135,8 @@ function  buildDarwinTemplate(mainWindow) {
           label: 'Toggle Full Screen',
           accelerator: 'Ctrl+Command+F',
           click: () => {
-            mainWindow.setFullScreen(!mainWindow.isFullScreen());
+            let window = BrowserWindow.getFocusedWindow()
+            window && window.setFullScreen(!window.isFullScreen());
           },
         },
       ],
@@ -178,14 +187,13 @@ function  buildDarwinTemplate(mainWindow) {
     };
     const subMenuView =
       process.env.NODE_ENV === 'development' ||
-      process.env.DEBUG_PROD === 'true'
+        process.env.DEBUG_PROD === 'true'
         ? subMenuViewDev
         : subMenuViewProd;
     return [subMenuAbout, subMenuEdit, subMenuView, subMenuWindow, subMenuHelp];
   }
 
-  function buildDefaultTemplate(mainWindow) {
-    let configWindow
+  buildDefaultTemplate() {
     const templateDefault = [
       {
         label: '&File',
@@ -197,19 +205,20 @@ function  buildDarwinTemplate(mainWindow) {
           {
             label: 'Configuration',
             click: () => {
-                if (!configWindow) {
-                    window = createConfigWindow();
-                } else {
-                    configWindow.focus();
-                }
+              if (!this.windowManager.configWindow) {
+                this.windowManager.createConfigWindow();
+              } else {
+                this.windowManager.configWindow.focus();
+              }
             }
-        },
+          },
           { type: 'separator' },
           {
             label: '&Close',
             accelerator: 'Ctrl+W',
             click: () => {
-              mainWindow.close();
+              let window = BrowserWindow.getFocusedWindow()
+              window && window.close();
             },
           },
         ],
@@ -218,43 +227,47 @@ function  buildDarwinTemplate(mainWindow) {
         label: '&View',
         submenu:
           process.env.NODE_ENV === 'development' ||
-          process.env.DEBUG_PROD === 'true'
+            process.env.DEBUG_PROD === 'true'
             ? [
-                {
-                  label: '&Reload',
-                  accelerator: 'Ctrl+R',
-                  click: () => {
-                    mainWindow.webContents.reload();
-                  },
+              {
+                label: '&Reload',
+                accelerator: 'Ctrl+R',
+                click: () => {
+                  let window = BrowserWindow.getFocusedWindow()
+                  window && window.webContents.reload();
                 },
-                {
-                  label: 'Toggle &Full Screen',
-                  accelerator: 'F11',
-                  click: () => {
-                    mainWindow.setFullScreen(
-                      !mainWindow.isFullScreen()
-                    );
-                  },
+              },
+              {
+                label: 'Toggle &Full Screen',
+                accelerator: 'F11',
+                click: () => {
+                  let window = BrowserWindow.getFocusedWindow()
+                  window && window.setFullScreen(
+                    !window.isFullScreen()
+                  );
                 },
-                {
-                  label: 'Toggle &Developer Tools',
-                  accelerator: 'Alt+Ctrl+I',
-                  click: () => {
-                    mainWindow.webContents.toggleDevTools();
-                  },
+              },
+              {
+                label: 'Toggle &Developer Tools',
+                accelerator: 'Alt+Ctrl+I',
+                click: () => {
+                  let window = BrowserWindow.getFocusedWindow()
+                  window && window.webContents.toggleDevTools();
                 },
-              ]
+              },
+            ]
             : [
-                {
-                  label: 'Toggle &Full Screen',
-                  accelerator: 'F11',
-                  click: () => {
-                    mainWindow.setFullScreen(
-                      !mainWindow.isFullScreen()
-                    );
-                  },
+              {
+                label: 'Toggle &Full Screen',
+                accelerator: 'F11',
+                click: () => {
+                  let window = BrowserWindow.getFocusedWindow()
+                  window && window.setFullScreen(
+                    !window.isFullScreen()
+                  );
                 },
-              ],
+              },
+            ],
       },
       {
         label: 'Help',
@@ -290,5 +303,6 @@ function  buildDarwinTemplate(mainWindow) {
     ];
     return templateDefault;
   }
+}
 
-module.exports = { buildMenu };
+module.exports = MenuBuilder

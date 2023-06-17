@@ -48,6 +48,7 @@ class MenuBuilder {
         { type: 'separator' },
         {
           label: 'Configuration',
+          accelerator: 'Command+,',
           click: () => {
             console.log('config window: ', this.windowManager.configWindow);
             if (!this.windowManager.configWindow) {
@@ -204,6 +205,7 @@ class MenuBuilder {
           },
           {
             label: 'Configuration',
+            accelerator: 'Ctrl+,',
             click: () => {
               if (!this.windowManager.configWindow) {
                 this.windowManager.createConfigWindow();

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, ipcMain } = require('electron');
+const { BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const { readConfig, saveConfig } = require('./config');
 

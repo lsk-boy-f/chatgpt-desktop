@@ -1,5 +1,4 @@
 const { app } = require('electron');
-const { buildMenu } = require('./menu');
 const WindowManager = require('./windowManager');
 const MenuBuilder = require('./menu');
 

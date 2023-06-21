@@ -5,14 +5,15 @@ on:
     tags:
       - "*"
 
-permissions:
-  contents: write
-
 jobs:
   release:
     name: build and release
-    runs-on: macos-12
+    runs-on: ${{ matrix.os }}
 
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
     steps:
       - name: Check out git repository
         uses: actions/checkout@v3.0.0
@@ -39,13 +40,25 @@ jobs:
       - name: Build App
         run: npm run package
 
-      - name: Cleanup Artifacts
+      - name: Cleanup Artifacts for Windows
+        if: matrix.os == 'windows-latest'
         run: |
-          npx rimraf "dist/*/"
+          npx rimraf "dist/!(*.exe)"
+
+      - name: Cleanup Artifacts for MacOS
+        if: matrix.os == 'macos-latest'
+        run: |
+          npx rimraf "dist/!(*.dmg)"
+
+      - name: Cleanup Artifacts for Linux
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          npx rimraf "dist/!(*.AppImage)"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3.0.0
         with:
+          name: ${{ matrix.os }}
           path: dist
 
       - name: Release

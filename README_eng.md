@@ -33,7 +33,7 @@ npm install
 
 ```shell
 cd chatgpt-desktop
-npm install
+npm start
 ```
 
 ## Configuration

@@ -30,7 +30,7 @@ npm install
 ### 构建和运行应用程序
 ```shell
 cd chatgpt-desktop
-npm install
+npm start
 ```
 
 ## 配置

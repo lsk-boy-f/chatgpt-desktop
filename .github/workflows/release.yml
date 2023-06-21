@@ -3,13 +3,15 @@ name: Build
 on:
   push:
     tags:
-      - '*'
+      - "*"
 
 jobs:
   release:
-    name: build and release 
+    name: build and release
     runs-on: macos-12
 
+    permissions:
+      contents: write
     steps:
       - name: Check out git repository
         uses: actions/checkout@v3.0.0
@@ -35,10 +37,10 @@ jobs:
 
       - name: Build App
         run: npm run package
-  
-      - name: Cleanup Artifacts 
+
+      - name: Cleanup Artifacts
         run: |
-            npx rimraf "dist/*/"
+          npx rimraf "dist/*/"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3.0.0

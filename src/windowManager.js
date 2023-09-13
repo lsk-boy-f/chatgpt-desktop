@@ -21,7 +21,7 @@ class WindowManager {
             }
         });
 
-        this.mainWindow.loadURL('https://ai.com');
+        this.mainWindow.loadURL('https://chat.openai.com');
 
         // 读取配置
         const { proxyAddress, proxyPort } = readConfig();

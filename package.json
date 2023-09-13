@@ -1,6 +1,6 @@
 {
   "name": "chatgpt-desktop",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "chatGPT desktop client, power by electron",
   "main": "src/main.js",
   "scripts": {
